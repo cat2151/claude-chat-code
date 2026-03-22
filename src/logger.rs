@@ -43,13 +43,10 @@ impl Logger {
         f.sync_all()?;
         Ok(())
     }
-}
-
     /// テスト専用：ファイルに書かない no-op ロガー
     #[cfg(test)]
     pub fn new_noop() -> Self {
-        use std::io::Write;
-        // 一時ファイルに書き込む（drop 時に削除される）
         let file = tempfile::tempfile().expect("tempfile");
         Self { inner: std::sync::Arc::new(std::sync::Mutex::new(file)) }
     }
+}

@@ -14,7 +14,8 @@ mod watcher;
 mod tests;
 
 use anyhow::Result;
-use app::AppState;
+use app::{AppState, AppStatus};
+use build::spawn_cargo_run;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEventKind},
     execute,
@@ -152,6 +153,7 @@ async fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Result<()
                             st.startup_zip_dialog = None;
                             st.push_log("N → 起動時 ZIP をスキップ".to_string());
                         }
+                        KeyCode::F(5) => restart_cargo_run(&state, &work).await,
                         KeyCode::Char('q') | KeyCode::Char('Q') => break,
                         _ => {}
                     }
@@ -165,6 +167,7 @@ async fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Result<()
                                 Err(e) => state.lock().await.push_log(format!("クリップボードコピー失敗: {}", e)),
                             }
                         }
+                        KeyCode::F(5) => restart_cargo_run(&state, &work).await,
                         _ => {}
                     }
                 }
@@ -184,6 +187,35 @@ async fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Result<()
 }
 
 static UPDATE_MESSAGE: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+
+fn prepare_cargo_run_restart(state: &mut AppState) {
+    state.push_log("F5 → cargo run を起動します".to_string());
+    state.set_status(AppStatus::Building);
+}
+
+async fn restart_cargo_run(state: &Arc<Mutex<AppState>>, work: &std::path::Path) {
+    {
+        let mut st = state.lock().await;
+        prepare_cargo_run_restart(&mut st);
+    }
+
+    let state2 = Arc::clone(state);
+    let project_dir = paths::project_dir(work);
+    tokio::spawn(async move {
+        match spawn_cargo_run(&project_dir) {
+            Ok(terminal) => {
+                let mut st = state2.lock().await;
+                st.push_log(format!("cargo run 起動完了 ({terminal})"));
+                st.set_status(AppStatus::Done("cargo run を起動しました".to_string()));
+            }
+            Err(e) => {
+                let mut st = state2.lock().await;
+                st.push_log(format!("cargo run 起動失敗: {}", e));
+                st.set_status(AppStatus::Error(e.to_string()));
+            }
+        }
+    });
+}
 
 // ─── 監視ループ ───────────────────────────────────────────────────────────────
 

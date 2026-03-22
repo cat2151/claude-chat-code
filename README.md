@@ -5,8 +5,7 @@ A Windows TUI written in Rust that monitors for zip downloads from Claude chat, 
 ---
 
 ## Status
-- The following will be addressed:
-- Pressing F5 will run `cargo run`. This is for when the application has been exited and needs to be re-run.
+- Press `F5` to run `cargo run` again after the launched app has been closed.
 
 ---
 
@@ -94,6 +93,7 @@ A configuration file is automatically generated on first launch.
 |-----|--------|
 | `q` | Quit |
 | `c` | Copy logs to clipboard |
+| `F5` | Run `cargo run` again |
 | `y` / `N` | Respond to launch ZIP confirmation dialog |
 
 ---
