@@ -1,0 +1,10 @@
+/// テスト専用モジュール。各テストファイルはテスト対象モジュールと1対1に対応する。
+mod test_app;
+mod test_config;
+mod test_fs_archive;
+mod test_fs_backup;
+mod test_fs_extract;
+mod test_fs_ops;
+mod test_paths;
+mod test_updater;
+mod test_watcher;
