@@ -5,6 +5,7 @@ mod test_fs_archive;
 mod test_fs_backup;
 mod test_fs_extract;
 mod test_fs_ops;
+mod test_main;
 mod test_paths;
 mod test_updater;
 mod test_watcher;

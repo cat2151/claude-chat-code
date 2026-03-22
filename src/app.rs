@@ -67,6 +67,8 @@ pub struct AppState {
     pub watch_dir_label: String,
     /// build 直前のソースコード調査結果
     pub src_stats: Option<SrcStats>,
+    /// 手動の cargo run 起動処理が進行中かどうか
+    pub cargo_run_launching: bool,
 }
 
 impl AppState {
@@ -83,6 +85,7 @@ impl AppState {
             remote_hash: None,
             watch_dir_label: String::new(),
             src_stats: None,
+            cargo_run_launching: false,
         }
     }
 
