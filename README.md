@@ -1,11 +1,6 @@
 # claude-chat-code
 
-A Windows TUI written in Rust that monitors for zip downloads from Claude chat, then automatically builds and launches the project.
-
----
-
-## Status
-- Press `F5` to run `cargo run` again after the launched app has been closed.
+A TUI for Windows that monitors for ZIP downloads from Claude chat, then automatically builds and launches the application. Written in Rust.
 
 ---
 
@@ -25,44 +20,45 @@ claude-chat-code
 
 ---
 
-## Problem and Solution
+## Challenges and Solutions
 
-### Traditional Workflow Problems
+### Traditional Challenges
 
-When generating or modifying code with Claude chat, the traditional workflow required the following steps every time:
+When generating or modifying code with Claude chat, the following steps were traditionally required every time:
 
-1.  Download the zip from Claude chat.
-2.  Back up your working directory.
-3.  Delete old files (to prevent build errors due to remnants of previous files).
-4.  Unzip the archive.
-5.  Run `cargo run`.
-6.  If there are build errors, paste them into Claude chat and instruct it to fix them.
-7.  Go back to step 1.
+1. Download the ZIP from Claude chat.
+2. Back up your working directory.
+3. Delete old files (to prevent build errors due to conflicts from leftover files).
+4. Extract the ZIP.
+5. Run `cargo run`.
+6. If there are build errors, paste them into Claude chat and instruct it to fix them.
+7. Go back to step 1.
 
-Repeating this cycle multiple times, manual operations disrupt concentration. Focusing on "moving files" detracts from the quality of "thinking about specifications".
+Repeating this cycle multiple times with manual steps disrupts concentration.
+Attention is diverted to "moving files," reducing the quality of "thinking about specifications."
 
-### This Application's Solution
+### Solution Provided by This App
 
-By simply clicking the download button in Claude chat, all of the following will run automatically:
+Simply pressing the download button in Claude chat automatically performs all of the following:
 
-1.  Detect the zip.
-2.  Back up the project.
-3.  Delete the existing `project/src/` (to prevent remnants of old files).
-4.  Unzip the archive.
-5.  Launch `cargo run` in a separate window.
+1. Detects the ZIP file.
+2. Backs up the project.
+3. Deletes the existing `project/src/` (to prevent leftover old files).
+4. Extracts the ZIP file.
+5. Launches `cargo run` in a separate window.
 
-After this, you can focus on interacting with Claude chat and the build results.
+Afterward, you can focus on interacting with Claude chat based on the build results.
 
 ---
 
 ## Usage
 
 ```
-Instruct Claude chat to code, then download the result as a zip.
+Instruct Claude chat to code, then download the result as a ZIP.
         ↓
-claude-chat-code automatically detects the zip, builds, and launches the application.
+claude-chat-code automatically detects the ZIP, builds, and launches the application.
         ↓
-If there's an error, paste the build result into Claude chat. If the app launches successfully, test the UX and instruct for feature additions or improvements.
+If there's an error, paste the build result into Claude chat; if the app launches successfully, verify the UX and instruct for specification additions or improvements.
         ↓
 Repeat.
 ```
@@ -78,10 +74,10 @@ A configuration file is automatically generated on first launch.
 ```
 
 ```toml
-# watch_dir: The directory to monitor. If commented out, Windows Desktop will be monitored.
+# watch_dir: Directory to monitor. If commented out, Windows Desktop will be monitored.
 # watch_dir = "C:\Users\<your name>\Desktop"
 
-# watch_interval: The monitoring check interval. Default is 500ms if commented out.
+# watch_interval: Monitoring check interval. Default is 500ms if commented out.
 # watch_interval = "500ms"
 ```
 
@@ -93,47 +89,46 @@ A configuration file is automatically generated on first launch.
 |-----|--------|
 | `q` | Quit |
 | `c` | Copy logs to clipboard |
-| `F5` | Run `cargo run` again |
-| `y` / `N` | Respond to launch ZIP confirmation dialog |
+| `y` / `N` | Respond to launch-time ZIP confirmation dialog |
 
 ---
 
-## Environment
+## System Requirements
 
--   **OS**: Windows
--   **Rust**: Latest stable recommended (automatically resolved by `cargo install`)
+- **OS**: Windows
+- **Rust**: Latest stable recommended (automatically resolved by `cargo install`)
 
 ---
 
-## Tech Stack
+## Technology Stack
 
 | Technology | Purpose |
 |------------|---------|
 | [Rust](https://www.rust-lang.org/) | Language |
-| [ratatui](https://ratatui.rs/) | TUI Framework |
-| [crossterm](https://github.com/crossterm-rs/crossterm) | Terminal control and key input |
-| [tokio](https://tokio.rs/) | Async runtime (monitoring, pipeline separation) |
+| [ratatui](https://ratatui.rs/) | TUI framework |
+| [crossterm](https://github.com/crossterm-rs/crossterm) | Terminal control, key input |
+| [tokio](https://tokio.rs/) | Asynchronous runtime (monitoring, pipeline isolation) |
 | [zip](https://crates.io/crates/zip) | ZIP extraction, automatic stripping of single top-level directory |
-| [reqwest](https://crates.io/crates/reqwest) | GitHub API for update check |
+| [reqwest](https://crates.io/crates/reqwest) | Update check via GitHub API |
 | [arboard](https://crates.io/crates/arboard) | Clipboard operations |
 | [serde](https://serde.rs/) + [toml](https://crates.io/crates/toml) | Reading and writing config.toml |
-| [chrono](https://crates.io/crates/chrono) | Timestamps, elapsed time display |
-| [walkdir](https://crates.io/crates/walkdir) | Recursive traversal under src/ |
-| [filetime](https://crates.io/crates/filetime) | Updating file mtime (touch) |
+| [chrono](https://crates.io/crates/chrono) | Timestamp, elapsed time display |
+| [walkdir](https://crates.io/crates/walkdir) | Recursive search under src/ |
+| [filetime](https://crates.io/crates/filetime) | File mtime update (touch) |
 
-## Context
-- If you want to use Claude more and are thinking of subscribing to Claude code, go ahead and subscribe!
-- This application is for personal use and is not intended for others. If you desire similar functionality, it is recommended to clone or build your own version.
+## Prerequisites
+- If you wish to use Claude more extensively and are considering subscribing to Claude code, please do so!
+- This application is for personal use and is not intended for others. If you desire similar functionality, it is recommended to clone or build your own.
 
 ## Intended Use Cases
-- A style of implementation where Claude chat and claude-chat-code are used to easily implement minimal features while performing UX validation.
-- The apps to be created are small Rust TUIs. Start small: display a list, 'q' to quit, then add features. Once familiar, specify core feature specifications from the beginning.
+- A style of implementation that leverages Claude chat and claude-chat-code to easily build minimal features while performing UX validation.
+- The intended applications are small Rust TUIs. Start small. Display a list, quit with 'q'. Add features later. Once comfortable, specify core feature requirements from the beginning.
 
-## claude-chat-code's Goal
-- PoC: Demonstrate that fun little applications can be easily and quickly created using only Claude's free chat (demonstrated).
+## What claude-chat-code Aims For
+- Proof of Concept. To demonstrate that fun little apps can be easily and quickly created using only Claude's free chat (demonstrated).
 
-## Not a Goal (Out of Scope)
-- Support: Responding to requests or suggestions.
+## What is Not Aimed For (Out of Scope)
+- Support. Responding to requests or suggestions.
 
 ## Disclaimer
 - Please ensure you fully understand AI security and proceed at your own risk.
