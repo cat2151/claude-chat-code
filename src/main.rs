@@ -188,29 +188,55 @@ async fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Result<()
 
 static UPDATE_MESSAGE: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 
-fn prepare_cargo_run_restart(state: &mut AppState) {
+fn can_restart_cargo_run(state: &AppState) -> bool {
+    !state.cargo_run_launching
+        && matches!(
+            state.status,
+            AppStatus::Watching | AppStatus::Done(_) | AppStatus::Error(_)
+        )
+}
+
+fn prepare_cargo_run_restart(state: &mut AppState) -> bool {
+    if !can_restart_cargo_run(state) {
+        state.push_log("F5 は現在の処理中は無効です".to_string());
+        return false;
+    }
+
+    state.cargo_run_launching = true;
     state.push_log("F5 → cargo run を起動します".to_string());
     state.set_status(AppStatus::Building);
+    true
 }
 
 async fn restart_cargo_run(state: &Arc<Mutex<AppState>>, work: &std::path::Path) {
     {
         let mut st = state.lock().await;
-        prepare_cargo_run_restart(&mut st);
+        if !prepare_cargo_run_restart(&mut st) {
+            return;
+        }
     }
 
     let state2 = Arc::clone(state);
     let project_dir = paths::project_dir(work);
     tokio::spawn(async move {
-        match spawn_cargo_run(&project_dir) {
-            Ok(terminal) => {
+        let result = tokio::task::spawn_blocking(move || spawn_cargo_run(&project_dir)).await;
+        match result {
+            Ok(Ok(terminal)) => {
                 let mut st = state2.lock().await;
+                st.cargo_run_launching = false;
                 st.push_log(format!("cargo run 起動完了 ({terminal})"));
                 st.set_status(AppStatus::Done("cargo run を起動しました".to_string()));
             }
+            Ok(Err(e)) => {
+                let mut st = state2.lock().await;
+                st.cargo_run_launching = false;
+                st.push_log(format!("cargo run 起動失敗: {}", e));
+                st.set_status(AppStatus::Error(e.to_string()));
+            }
             Err(e) => {
                 let mut st = state2.lock().await;
-                st.push_log(format!("cargo run 起動失敗: {}", e));
+                st.cargo_run_launching = false;
+                st.push_log(format!("cargo run 起動スレッドエラー: {}", e));
                 st.set_status(AppStatus::Error(e.to_string()));
             }
         }

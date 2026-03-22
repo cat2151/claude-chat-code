@@ -43,7 +43,7 @@ impl Logger {
         f.sync_all()?;
         Ok(())
     }
-    /// テスト専用：ファイルに書かない no-op ロガー
+    /// テスト専用：`log.txt` には書かず、一時ファイルに書き込むロガー
     #[cfg(test)]
     pub fn new_noop() -> Self {
         let file = tempfile::tempfile().expect("tempfile");
