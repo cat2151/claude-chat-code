@@ -220,27 +220,31 @@ async fn restart_cargo_run(state: &Arc<Mutex<AppState>>, work: &std::path::Path)
     let project_dir = paths::project_dir(work);
     tokio::spawn(async move {
         let result = tokio::task::spawn_blocking(move || spawn_cargo_run(&project_dir)).await;
-        match result {
-            Ok(Ok(terminal)) => {
-                let mut st = state2.lock().await;
-                st.cargo_run_launching = false;
-                st.push_log(format!("cargo run 起動完了 ({terminal})"));
-                st.set_status(AppStatus::Done("cargo run を起動しました".to_string()));
-            }
-            Ok(Err(e)) => {
-                let mut st = state2.lock().await;
-                st.cargo_run_launching = false;
-                st.push_log(format!("cargo run 起動失敗: {}", e));
-                st.set_status(AppStatus::Error(e.to_string()));
-            }
-            Err(e) => {
-                let mut st = state2.lock().await;
-                st.cargo_run_launching = false;
-                st.push_log(format!("cargo run 起動スレッドエラー: {}", e));
-                st.set_status(AppStatus::Error(e.to_string()));
-            }
-        }
+        finish_cargo_run_restart(&state2, result).await;
     });
+}
+
+async fn finish_cargo_run_restart(
+    state: &Arc<Mutex<AppState>>,
+    result: Result<Result<String, anyhow::Error>, tokio::task::JoinError>,
+) {
+    let mut st = state.lock().await;
+    st.cargo_run_launching = false;
+
+    match result {
+        Ok(Ok(terminal)) => {
+            st.push_log(format!("cargo run 起動完了 ({terminal})"));
+            st.set_status(AppStatus::Done("cargo run を起動しました".to_string()));
+        }
+        Ok(Err(e)) => {
+            st.push_log(format!("cargo run 起動失敗: {}", e));
+            st.set_status(AppStatus::Error(e.to_string()));
+        }
+        Err(e) => {
+            st.push_log(format!("cargo run 起動タスクエラー: {}", e));
+            st.set_status(AppStatus::Error(e.to_string()));
+        }
+    }
 }
 
 // ─── 監視ループ ───────────────────────────────────────────────────────────────
