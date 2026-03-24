@@ -110,7 +110,10 @@ pub fn run_self_update() -> anyhow::Result<bool> {
 
         let bat_str = bat_path
             .to_str()
-            .ok_or_else(|| anyhow::anyhow!("temp bat path is not valid UTF-8"))?;
+            .ok_or_else(|| anyhow::anyhow!(
+                "temp bat path is not valid UTF-8: {}",
+                bat_path.display()
+            ))?;
         Command::new("cmd")
             .args(["/C", "start", "", bat_str])
             .spawn()?;
