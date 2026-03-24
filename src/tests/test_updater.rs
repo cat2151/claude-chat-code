@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod updater_tests {
-    use crate::updater::{is_update_available, needs_update, update_bat_content};
+    use crate::updater::{
+        is_update_available, needs_update, start_update_script_args, update_bat_content,
+    };
 
     #[test]
     fn needs_update_false_when_remote_is_none() {
@@ -51,5 +53,16 @@ mod updater_tests {
         assert!(content.contains("timeout /t 3 /nobreak >nul"));
         assert!(content.contains("cargo install --force --git https://github.com/cat2151/claude-chat-code"));
         assert!(content.contains("del \"%~f0\""));
+    }
+
+    #[test]
+    fn start_update_script_args_quotes_bat_path_for_cmd_start() {
+        let args = start_update_script_args(r"C:\Users\Test User\AppData\Local\Temp\update script.bat");
+        assert_eq!(args, vec![
+            "/C".to_string(),
+            "start".to_string(),
+            "".to_string(),
+            "\"C:\\Users\\Test User\\AppData\\Local\\Temp\\update script.bat\"".to_string(),
+        ]);
     }
 }

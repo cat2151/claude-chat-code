@@ -19,6 +19,16 @@ fn install_cmd() -> String {
     format!("cargo install --force --git {GIT_URL}")
 }
 
+#[cfg(any(target_os = "windows", test))]
+pub(crate) fn start_update_script_args(bat_path: &str) -> Vec<String> {
+    vec![
+        "/C".to_string(),
+        "start".to_string(),
+        "".to_string(),
+        format!("\"{bat_path}\""),
+    ]
+}
+
 // ─── GitHub API レスポンス（必要なフィールドのみ） ────────────────────────────
 
 #[derive(Deserialize)]
@@ -115,7 +125,7 @@ pub fn run_self_update() -> anyhow::Result<bool> {
                 bat_path.display()
             ))?;
         Command::new("cmd")
-            .args(["/C", "start", "", bat_str])
+            .args(start_update_script_args(bat_str))
             .spawn()?;
 
         println!("Launching update script: {}", bat_path.display());
