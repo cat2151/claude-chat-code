@@ -18,6 +18,12 @@ cargo install --force --git https://github.com/cat2151/claude-chat-code
 claude-chat-code
 ```
 
+インストール済みバイナリを update するときは以下を実行します。
+
+```powershell
+claude-chat-code update
+```
+
 ---
 
 ## 課題と解決

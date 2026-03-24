@@ -2,7 +2,7 @@
 mod main_tests {
     use crate::{
         app::{AppState, AppStatus},
-        can_restart_cargo_run, prepare_cargo_run_restart,
+        can_restart_cargo_run, is_update_subcommand, prepare_cargo_run_restart,
     };
 
     #[test]
@@ -43,5 +43,16 @@ mod main_tests {
             "F5 無効ログが追加されていない: {:?}",
             state.log
         );
+    }
+
+    #[test]
+    fn is_update_subcommand_only_matches_update_in_first_argument() {
+        assert!(is_update_subcommand(&["claude-chat-code".into(), "update".into()]));
+        assert!(!is_update_subcommand(&["claude-chat-code".into()]));
+        assert!(!is_update_subcommand(&[
+            "claude-chat-code".into(),
+            "--help".into(),
+            "update".into(),
+        ]));
     }
 }
