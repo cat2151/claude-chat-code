@@ -5,14 +5,19 @@
 ///   - ビルド時 hash が "unknown"（git なし・repository なし）
 ///   - ネットワークエラー / repository が存在しない（404 等）
 ///   - レスポンスのパースに失敗
-
 use serde::Deserialize;
+use std::process::Command;
 
 const OWNER: &str = "cat2151";
-const REPO:  &str = "claude-chat-code";
+const REPO: &str = "claude-chat-code";
+const GIT_URL: &str = "https://github.com/cat2151/claude-chat-code";
 
 /// ビルド時に埋め込まれた commit hash
 pub const LOCAL_HASH: &str = env!("BUILD_COMMIT_HASH");
+
+fn install_cmd() -> String {
+    format!("cargo install --force --git {GIT_URL}")
+}
 
 // ─── GitHub API レスポンス（必要なフィールドのみ） ────────────────────────────
 
@@ -63,8 +68,69 @@ pub async fn fetch_remote_hash() -> Option<String> {
 /// remote_hash が None（取得失敗）の場合は false を返す。
 pub fn needs_update(remote_hash: Option<&str>) -> bool {
     match remote_hash {
-        Some(remote) => LOCAL_HASH != "unknown" && LOCAL_HASH != remote,
-        None         => false,
+        Some(remote) => is_update_available(LOCAL_HASH, remote),
+        None => false,
+    }
+}
+
+pub fn is_update_available(build_hash: &str, remote_hash: &str) -> bool {
+    !build_hash.is_empty()
+        && build_hash != "unknown"
+        && !remote_hash.is_empty()
+        && remote_hash != build_hash
+}
+
+#[cfg(any(target_os = "windows", test))]
+pub fn update_bat_content() -> String {
+    format!(
+        "@echo off\r\ntimeout /t 3 /nobreak >nul\r\n{cmd}\r\ndel \"%~f0\"\r\n",
+        cmd = install_cmd()
+    )
+}
+
+pub fn run_self_update() -> anyhow::Result<bool> {
+    #[cfg(target_os = "windows")]
+    {
+        use std::io::Write;
+        use std::time::{SystemTime, UNIX_EPOCH};
+
+        let pid = std::process::id();
+        let ts = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_millis())
+            .unwrap_or(0);
+        let bat_path = std::env::temp_dir().join(format!("claude_chat_code_update_{pid}_{ts}.bat"));
+        {
+            let mut f = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&bat_path)?;
+            f.write_all(update_bat_content().as_bytes())?;
+        }
+
+        let bat_str = bat_path
+            .to_str()
+            .ok_or_else(|| anyhow::anyhow!("temp bat path is not valid UTF-8"))?;
+        Command::new("cmd")
+            .args(["/C", "start", "", bat_str])
+            .spawn()?;
+
+        println!("Launching update script: {}", bat_path.display());
+        println!("The application will now exit so the file lock is released.");
+        return Ok(true);
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        let cmd = install_cmd();
+        println!("Running: {cmd}");
+        let status = Command::new("cargo")
+            .args(["install", "--force", "--git", GIT_URL])
+            .status()?;
+        if !status.success() {
+            anyhow::bail!("cargo install failed with status: {status}");
+        }
+        Ok(false)
     }
 }
 
@@ -72,12 +138,13 @@ pub fn needs_update(remote_hash: Option<&str>) -> bool {
 pub fn update_message(remote_hash: &str) -> String {
     format!(
         "\nrepository が update されました。以下のコマンドで update してください：\n\n\
-         cargo install --force --git https://github.com/{owner}/{repo}\n\n\
+         {repo} update\n\n\
+         （内部では `{install_cmd}` を実行します）\n\n\
          local : {local}\n\
          remote: {remote}\n",
-        owner  = OWNER,
-        repo   = REPO,
-        local  = &LOCAL_HASH[..8],
+        install_cmd = install_cmd(),
+        repo = REPO,
+        local = &LOCAL_HASH[..8],
         remote = &remote_hash[..8],
     )
 }

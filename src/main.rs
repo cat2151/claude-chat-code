@@ -29,8 +29,21 @@ use std::{io, path::PathBuf, sync::Arc, time::Duration};
 use tokio::sync::Mutex;
 use watcher::{dir_mtime, find_latest_zip, has_changed, list_files};
 
+fn is_update_subcommand(args: &[String]) -> bool {
+    args.get(1).map(String::as_str) == Some("update")
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
+    let args: Vec<String> = std::env::args().collect();
+    if is_update_subcommand(&args) {
+        let should_exit = updater::run_self_update()?;
+        if should_exit {
+            std::process::exit(0);
+        }
+        return Ok(());
+    }
+
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;

@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod updater_tests {
-    use crate::updater::needs_update;
+    use crate::updater::{is_update_available, needs_update, update_bat_content};
 
     #[test]
     fn needs_update_false_when_remote_is_none() {
@@ -30,5 +30,26 @@ mod updater_tests {
             true
         };
         assert!(result);
+    }
+
+    #[test]
+    fn is_update_available_true_when_hashes_differ() {
+        assert!(is_update_available("01234567", "89abcdef"));
+    }
+
+    #[test]
+    fn is_update_available_false_when_hashes_match_or_invalid() {
+        assert!(!is_update_available("01234567", "01234567"));
+        assert!(!is_update_available("unknown", "89abcdef"));
+        assert!(!is_update_available("", "89abcdef"));
+        assert!(!is_update_available("01234567", ""));
+    }
+
+    #[test]
+    fn update_bat_content_contains_expected_steps() {
+        let content = update_bat_content();
+        assert!(content.contains("timeout /t 3 /nobreak >nul"));
+        assert!(content.contains("cargo install --force --git https://github.com/cat2151/claude-chat-code"));
+        assert!(content.contains("del \"%~f0\""));
     }
 }
