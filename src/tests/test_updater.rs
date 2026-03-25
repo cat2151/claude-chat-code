@@ -56,13 +56,13 @@ mod updater_tests {
     }
 
     #[test]
-    fn start_update_script_args_quotes_bat_path_for_cmd_start() {
+    fn start_update_script_args_passes_raw_bat_path_for_cmd_start() {
         let args = start_update_script_args(r"C:\Users\Test User\AppData\Local\Temp\update script.bat");
         assert_eq!(args, vec![
             "/C".to_string(),
             "start".to_string(),
             "".to_string(),
-            "\"C:\\Users\\Test User\\AppData\\Local\\Temp\\update script.bat\"".to_string(),
+            "C:\\Users\\Test User\\AppData\\Local\\Temp\\update script.bat".to_string(),
         ]);
     }
 }
