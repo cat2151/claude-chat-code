@@ -18,6 +18,12 @@ After installation, you can launch it from any terminal.
 claude-chat-code
 ```
 
+To display the built-in help, run:
+
+```powershell
+claude-chat-code --help
+```
+
 To update an installed binary, run the following:
 
 ```powershell

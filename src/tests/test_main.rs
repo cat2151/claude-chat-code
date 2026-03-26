@@ -2,7 +2,8 @@
 mod main_tests {
     use crate::{
         app::{AppState, AppStatus},
-        can_restart_cargo_run, is_update_subcommand, prepare_cargo_run_restart,
+        can_restart_cargo_run, help_text, is_help_flag, is_update_subcommand,
+        prepare_cargo_run_restart,
     };
 
     #[test]
@@ -54,5 +55,27 @@ mod main_tests {
             "--help".into(),
             "update".into(),
         ]));
+    }
+
+    #[test]
+    fn is_help_flag_only_matches_help_in_first_argument() {
+        assert!(is_help_flag(&["claude-chat-code".into(), "--help".into()]));
+        assert!(is_help_flag(&["claude-chat-code".into(), "-h".into()]));
+        assert!(!is_help_flag(&["claude-chat-code".into()]));
+        assert!(!is_help_flag(&[
+            "claude-chat-code".into(),
+            "update".into(),
+            "--help".into(),
+        ]));
+    }
+
+    #[test]
+    fn help_text_contains_usage_and_update_command() {
+        let help = help_text();
+
+        assert!(help.contains("claude-chat-code"));
+        assert!(help.contains("USAGE:"));
+        assert!(help.contains("update"));
+        assert!(help.contains("--help"));
     }
 }

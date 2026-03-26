@@ -18,6 +18,12 @@ cargo install --force --git https://github.com/cat2151/claude-chat-code
 claude-chat-code
 ```
 
+組み込みの help を表示するときは以下を実行します。
+
+```powershell
+claude-chat-code --help
+```
+
 インストール済みバイナリを update するときは以下を実行します。
 
 ```powershell

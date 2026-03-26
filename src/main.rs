@@ -33,9 +33,31 @@ fn is_update_subcommand(args: &[String]) -> bool {
     args.get(1).map(String::as_str) == Some("update")
 }
 
+fn is_help_flag(args: &[String]) -> bool {
+    matches!(args.get(1).map(String::as_str), Some("-h" | "--help"))
+}
+
+const HELP_TEXT: &str = concat!(
+    env!("CARGO_PKG_NAME"), " ", env!("CARGO_PKG_VERSION"), "\n\n",
+    "USAGE:\n",
+    "    ", env!("CARGO_PKG_NAME"), " [OPTIONS] [COMMAND]\n\n",
+    "COMMANDS:\n",
+    "    update    Update the installed binary and exit\n\n",
+    "OPTIONS:\n",
+    "    -h, --help    Print help\n",
+);
+
+fn help_text() -> &'static str {
+    HELP_TEXT
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
+    if is_help_flag(&args) {
+        print!("{}", help_text());
+        return Ok(());
+    }
     if is_update_subcommand(&args) {
         let should_exit = updater::run_self_update()?;
         if should_exit {
