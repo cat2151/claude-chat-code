@@ -1,5 +1,5 @@
-/// パス解決を一か所に集約する。
-/// AppData Local ベースのアプリディレクトリと、work/ 以下の各 sub-dir を管理する。
+//! パス解決を一か所に集約する。
+//! AppData Local ベースのアプリディレクトリと、work/ 以下の各 sub-dir を管理する。
 
 use std::path::{Path, PathBuf};
 

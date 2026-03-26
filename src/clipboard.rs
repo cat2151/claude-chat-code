@@ -1,5 +1,5 @@
-/// クリップボード操作に責任を持つ。
-/// log.txt の内容を Windows クリップボードにコピーする。
+//! クリップボード操作に責任を持つ。
+//! log.txt の内容を Windows クリップボードにコピーする。
 
 use anyhow::Result;
 use std::fs;

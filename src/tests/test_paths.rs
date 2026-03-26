@@ -17,7 +17,7 @@ mod paths_tests {
 
     #[test]
     fn project_dir_is_under_work() {
-        assert!(project_dir(&fake_work()).starts_with(&fake_work()));
+        assert!(project_dir(&fake_work()).starts_with(fake_work()));
     }
 
     #[test]
@@ -28,6 +28,6 @@ mod paths_tests {
 
     #[test]
     fn backup_root_is_under_work() {
-        assert!(backup_root(&fake_work()).starts_with(&fake_work()));
+        assert!(backup_root(&fake_work()).starts_with(fake_work()));
     }
 }

@@ -1,5 +1,5 @@
-/// ZIP 展開に責任を持つ。
-/// トップレベルに単一ディレクトリがある場合はそれを剥いて展開する。
+//! ZIP 展開に責任を持つ。
+//! トップレベルに単一ディレクトリがある場合はそれを剥いて展開する。
 
 use anyhow::Result;
 use std::{collections::HashSet, fs, io, path::Path};

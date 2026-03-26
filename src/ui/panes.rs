@@ -1,5 +1,5 @@
-/// 各ペインの描画に責任を持つ。
-/// AppState を読み取るだけで状態変更は行わない。
+//! 各ペインの描画に責任を持つ。
+//! AppState を読み取るだけで状態変更は行わない。
 
 use super::{age::age_label, theme::{styled_block, Mk}};
 use crate::app::AppState;
