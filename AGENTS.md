@@ -1,1 +1,2 @@
 - PRコメントは日本語で書くこと
+- cargo formatとlinterを実行すること
