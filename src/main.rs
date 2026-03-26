@@ -16,6 +16,7 @@ mod tests;
 use anyhow::Result;
 use app::{AppState, AppStatus};
 use build::spawn_cargo_run;
+use clap::{error::ErrorKind, ArgMatches, Command};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEventKind},
     execute,
@@ -29,32 +30,34 @@ use std::{io, path::PathBuf, sync::Arc, time::Duration};
 use tokio::sync::Mutex;
 use watcher::{dir_mtime, find_latest_zip, has_changed, list_files};
 
-fn is_update_subcommand(args: &[String]) -> bool {
-    args.get(1).map(String::as_str) == Some("update")
+fn cli() -> Command {
+    Command::new(env!("CARGO_PKG_NAME"))
+        .version(env!("CARGO_PKG_VERSION"))
+        .disable_help_subcommand(true)
+        .disable_version_flag(true)
+        .subcommand(Command::new("update").about("Update the installed binary and exit"))
 }
 
-fn is_help_flag(args: &[String]) -> bool {
-    matches!(args.get(1).map(String::as_str), Some("-h" | "--help"))
+fn try_get_matches_from<I, T>(args: I) -> std::result::Result<ArgMatches, clap::Error>
+where
+    I: IntoIterator<Item = T>,
+    T: Into<std::ffi::OsString> + Clone,
+{
+    cli().try_get_matches_from(args)
 }
-
-const HELP_TEXT: &str = concat!(
-    env!("CARGO_PKG_NAME"), " ", env!("CARGO_PKG_VERSION"), "\n\n",
-    "USAGE:\n",
-    "    ", env!("CARGO_PKG_NAME"), " [OPTIONS] [COMMAND]\n\n",
-    "COMMANDS:\n",
-    "    update    Update the installed binary and exit\n\n",
-    "OPTIONS:\n",
-    "    -h, --help    Print help\n",
-);
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let args: Vec<String> = std::env::args().collect();
-    if is_help_flag(&args) {
-        print!("{}", HELP_TEXT);
-        return Ok(());
-    }
-    if is_update_subcommand(&args) {
+    let matches = match try_get_matches_from(std::env::args_os()) {
+        Ok(matches) => matches,
+        Err(err) if err.kind() == ErrorKind::DisplayHelp => {
+            err.print()?;
+            return Ok(());
+        }
+        Err(err) => err.exit(),
+    };
+
+    if matches.subcommand_name() == Some("update") {
         let should_exit = updater::run_self_update()?;
         if should_exit {
             std::process::exit(0);

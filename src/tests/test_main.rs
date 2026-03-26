@@ -2,9 +2,9 @@
 mod main_tests {
     use crate::{
         app::{AppState, AppStatus},
-        can_restart_cargo_run, is_help_flag, is_update_subcommand, HELP_TEXT,
-        prepare_cargo_run_restart,
+        can_restart_cargo_run, cli, prepare_cargo_run_restart, try_get_matches_from,
     };
+    use clap::error::ErrorKind;
 
     #[test]
     fn prepare_cargo_run_restart_sets_building_and_logs_f5_message() {
@@ -47,34 +47,34 @@ mod main_tests {
     }
 
     #[test]
-    fn is_update_subcommand_only_matches_update_in_first_argument() {
-        assert!(is_update_subcommand(&["claude-chat-code".into(), "update".into()]));
-        assert!(!is_update_subcommand(&["claude-chat-code".into()]));
-        assert!(!is_update_subcommand(&[
-            "claude-chat-code".into(),
-            "--help".into(),
-            "update".into(),
-        ]));
+    fn update_subcommand_only_matches_in_first_argument() {
+        let update =
+            try_get_matches_from(["claude-chat-code", "update"]).expect("update should parse");
+        assert_eq!(update.subcommand_name(), Some("update"));
+
+        let no_subcommand =
+            try_get_matches_from(["claude-chat-code"]).expect("empty args should parse");
+        assert_eq!(no_subcommand.subcommand_name(), None);
+
+        assert!(try_get_matches_from(["claude-chat-code", "--help", "update"]).is_err());
     }
 
     #[test]
-    fn is_help_flag_only_matches_help_in_first_argument() {
-        assert!(is_help_flag(&["claude-chat-code".into(), "--help".into()]));
-        assert!(is_help_flag(&["claude-chat-code".into(), "-h".into()]));
-        assert!(!is_help_flag(&["claude-chat-code".into()]));
-        assert!(!is_help_flag(&[
-            "claude-chat-code".into(),
-            "update".into(),
-            "--help".into(),
-        ]));
+    fn help_flags_return_display_help() {
+        let long_help = try_get_matches_from(["claude-chat-code", "--help"]).unwrap_err();
+        assert_eq!(long_help.kind(), ErrorKind::DisplayHelp);
+
+        let short_help = try_get_matches_from(["claude-chat-code", "-h"]).unwrap_err();
+        assert_eq!(short_help.kind(), ErrorKind::DisplayHelp);
     }
 
     #[test]
     fn help_text_contains_usage_and_update_command() {
-        let help = HELP_TEXT;
+        let mut command = cli();
+        let help = command.render_long_help().to_string();
 
         assert!(help.contains("claude-chat-code"));
-        assert!(help.contains("USAGE:"));
+        assert!(help.contains("Usage:"));
         assert!(help.contains("update"));
         assert!(help.contains("--help"));
     }
