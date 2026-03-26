@@ -24,28 +24,37 @@ mod fs_extract_tests {
     fn strips_single_top_level_dir() {
         let tmp = tempdir().unwrap();
         let zip_path = tmp.path().join("test.zip");
-        make_zip(&zip_path, &[
-            ("myproject/", b""),
-            ("myproject/Cargo.toml", b"[package]"),
-            ("myproject/src/", b""),
-            ("myproject/src/main.rs", b"fn main(){}"),
-        ]);
+        make_zip(
+            &zip_path,
+            &[
+                ("myproject/", b""),
+                ("myproject/Cargo.toml", b"[package]"),
+                ("myproject/src/", b""),
+                ("myproject/src/main.rs", b"fn main(){}"),
+            ],
+        );
         let project = tmp.path().join("project");
         extract_zip(&zip_path, &project).unwrap();
 
         assert!(project.join("Cargo.toml").exists());
         assert!(project.join("src").join("main.rs").exists());
-        assert!(!project.join("myproject").exists(), "トップディレクトリが残ってはいけない");
+        assert!(
+            !project.join("myproject").exists(),
+            "トップディレクトリが残ってはいけない"
+        );
     }
 
     #[test]
     fn no_strip_when_flat_structure() {
         let tmp = tempdir().unwrap();
         let zip_path = tmp.path().join("flat.zip");
-        make_zip(&zip_path, &[
-            ("Cargo.toml", b"[package]"),
-            ("src/main.rs", b"fn main(){}"),
-        ]);
+        make_zip(
+            &zip_path,
+            &[
+                ("Cargo.toml", b"[package]"),
+                ("src/main.rs", b"fn main(){}"),
+            ],
+        );
         let project = tmp.path().join("project");
         extract_zip(&zip_path, &project).unwrap();
 
@@ -57,10 +66,7 @@ mod fs_extract_tests {
     fn no_strip_when_multiple_top_dirs() {
         let tmp = tempdir().unwrap();
         let zip_path = tmp.path().join("multi.zip");
-        make_zip(&zip_path, &[
-            ("a/file.txt", b"aaa"),
-            ("b/file.txt", b"bbb"),
-        ]);
+        make_zip(&zip_path, &[("a/file.txt", b"aaa"), ("b/file.txt", b"bbb")]);
         let project = tmp.path().join("project");
         extract_zip(&zip_path, &project).unwrap();
 

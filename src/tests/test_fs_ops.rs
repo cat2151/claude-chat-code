@@ -22,7 +22,10 @@ mod fs_ops_tests {
 
     #[test]
     fn touch_src_files_returns_zero_for_nonexistent_dir() {
-        assert_eq!(touch_src_files(std::path::Path::new("/nonexistent/src")).unwrap(), 0);
+        assert_eq!(
+            touch_src_files(std::path::Path::new("/nonexistent/src")).unwrap(),
+            0
+        );
     }
 
     #[test]

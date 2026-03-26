@@ -7,12 +7,19 @@ mod watcher_tests {
     use tempfile::tempdir;
 
     fn make_entry(name: &str) -> FileEntry {
-        FileEntry { name: name.to_string(), modified: Local::now() }
+        FileEntry {
+            name: name.to_string(),
+            modified: Local::now(),
+        }
     }
 
     #[test]
     fn find_latest_zip_returns_first_zip_in_list() {
-        let files = vec![make_entry("readme.txt"), make_entry("build.zip"), make_entry("old.zip")];
+        let files = vec![
+            make_entry("readme.txt"),
+            make_entry("build.zip"),
+            make_entry("old.zip"),
+        ];
         assert_eq!(find_latest_zip(&files), Some("build.zip".to_string()));
     }
 

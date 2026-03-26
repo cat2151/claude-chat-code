@@ -1,7 +1,10 @@
 //! 各ペインの描画に責任を持つ。
 //! AppState を読み取るだけで状態変更は行わない。
 
-use super::{age::age_label, theme::{styled_block, Mk}};
+use super::{
+    age::age_label,
+    theme::{styled_block, Mk},
+};
 use crate::app::AppState;
 use ratatui::{
     layout::Rect,
@@ -25,26 +28,30 @@ pub fn draw_status(f: &mut Frame, app: &AppState, area: Rect) {
 // ─── 監視ファイル一覧 ─────────────────────────────────────────────────────────
 
 pub fn draw_file_list(f: &mut Frame, app: &AppState, area: Rect) {
-    let items: Vec<ListItem> = app.file_list.iter().map(|fe| {
-        let (name_style, ts_style) = if fe.is_zip() {
-            (
-                Style::default().fg(Mk::YELLOW).add_modifier(Modifier::BOLD),
-                Style::default().fg(Mk::ORANGE),
-            )
-        } else {
-            (
-                Style::default().fg(Mk::FG),
-                Style::default().fg(Mk::COMMENT),
-            )
-        };
-        let ts = fe.modified.format("%m/%d %H:%M:%S").to_string();
-        ListItem::new(Line::from(vec![
-            Span::styled(ts, ts_style),
-            Span::raw("  "),
-            Span::styled(fe.name.clone(), name_style),
-        ]))
-        .style(Style::default().bg(Mk::BG))
-    }).collect();
+    let items: Vec<ListItem> = app
+        .file_list
+        .iter()
+        .map(|fe| {
+            let (name_style, ts_style) = if fe.is_zip() {
+                (
+                    Style::default().fg(Mk::YELLOW).add_modifier(Modifier::BOLD),
+                    Style::default().fg(Mk::ORANGE),
+                )
+            } else {
+                (
+                    Style::default().fg(Mk::FG),
+                    Style::default().fg(Mk::COMMENT),
+                )
+            };
+            let ts = fe.modified.format("%m/%d %H:%M:%S").to_string();
+            ListItem::new(Line::from(vec![
+                Span::styled(ts, ts_style),
+                Span::raw("  "),
+                Span::styled(fe.name.clone(), name_style),
+            ]))
+            .style(Style::default().bg(Mk::BG))
+        })
+        .collect();
 
     let title = format!(" Watch: {} ", app.watch_dir_label);
     f.render_widget(List::new(items).block(styled_block(&title)), area);
@@ -53,21 +60,26 @@ pub fn draw_file_list(f: &mut Frame, app: &AppState, area: Rect) {
 // ─── バックアップ一覧（age ラベル付き） ──────────────────────────────────────
 
 pub fn draw_backup_list(f: &mut Frame, app: &AppState, area: Rect) {
-    let items: Vec<ListItem> = app.backup_list.iter().enumerate().map(|(i, name)| {
-        let name_style = if i == 0 {
-            Style::default().fg(Mk::GREEN).add_modifier(Modifier::BOLD)
-        } else {
-            Style::default().fg(Mk::FG)
-        };
-        let age = age_label(name);
-        let age_style = Style::default().fg(Mk::COMMENT);
+    let items: Vec<ListItem> = app
+        .backup_list
+        .iter()
+        .enumerate()
+        .map(|(i, name)| {
+            let name_style = if i == 0 {
+                Style::default().fg(Mk::GREEN).add_modifier(Modifier::BOLD)
+            } else {
+                Style::default().fg(Mk::FG)
+            };
+            let age = age_label(name);
+            let age_style = Style::default().fg(Mk::COMMENT);
 
-        ListItem::new(Line::from(vec![
-            Span::styled(format!("{:>5} ", age), age_style),
-            Span::styled(name.clone(), name_style),
-        ]))
-        .style(Style::default().bg(Mk::BG))
-    }).collect();
+            ListItem::new(Line::from(vec![
+                Span::styled(format!("{:>5} ", age), age_style),
+                Span::styled(name.clone(), name_style),
+            ]))
+            .style(Style::default().bg(Mk::BG))
+        })
+        .collect();
 
     f.render_widget(List::new(items).block(styled_block(" Backups ")), area);
 }
@@ -75,21 +87,26 @@ pub fn draw_backup_list(f: &mut Frame, app: &AppState, area: Rect) {
 // ─── アーカイブ一覧（age ラベル付き） ────────────────────────────────────────
 
 pub fn draw_archives_list(f: &mut Frame, app: &AppState, area: Rect) {
-    let items: Vec<ListItem> = app.archives_list.iter().enumerate().map(|(i, name)| {
-        let name_style = if i == 0 {
-            Style::default().fg(Mk::YELLOW).add_modifier(Modifier::BOLD)
-        } else {
-            Style::default().fg(Mk::FG)
-        };
-        let age = age_label(name);
-        let age_style = Style::default().fg(Mk::COMMENT);
+    let items: Vec<ListItem> = app
+        .archives_list
+        .iter()
+        .enumerate()
+        .map(|(i, name)| {
+            let name_style = if i == 0 {
+                Style::default().fg(Mk::YELLOW).add_modifier(Modifier::BOLD)
+            } else {
+                Style::default().fg(Mk::FG)
+            };
+            let age = age_label(name);
+            let age_style = Style::default().fg(Mk::COMMENT);
 
-        ListItem::new(Line::from(vec![
-            Span::styled(format!("{:>5} ", age), age_style),
-            Span::styled(name.clone(), name_style),
-        ]))
-        .style(Style::default().bg(Mk::BG))
-    }).collect();
+            ListItem::new(Line::from(vec![
+                Span::styled(format!("{:>5} ", age), age_style),
+                Span::styled(name.clone(), name_style),
+            ]))
+            .style(Style::default().bg(Mk::BG))
+        })
+        .collect();
 
     f.render_widget(List::new(items).block(styled_block(" Archives ")), area);
 }
@@ -138,7 +155,8 @@ pub fn draw_src_stats(f: &mut Frame, app: &AppState, area: Rect) {
 
 pub fn draw_log(f: &mut Frame, app: &AppState, area: Rect) {
     let visible = (area.height as usize).saturating_sub(2);
-    let items: Vec<ListItem> = app.log
+    let items: Vec<ListItem> = app
+        .log
         .iter()
         .rev()
         .take(visible)
@@ -153,13 +171,9 @@ pub fn draw_log(f: &mut Frame, app: &AppState, area: Rect) {
             } else {
                 Style::default().fg(Mk::COMMENT)
             };
-            ListItem::new(Span::styled(l.clone(), style))
-                .style(Style::default().bg(Mk::BG))
+            ListItem::new(Span::styled(l.clone(), style)).style(Style::default().bg(Mk::BG))
         })
         .collect();
 
-    f.render_widget(
-        List::new(items).block(styled_block(" Log ")),
-        area,
-    );
+    f.render_widget(List::new(items).block(styled_block(" Log ")), area);
 }

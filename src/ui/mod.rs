@@ -60,7 +60,9 @@ pub fn draw(f: &mut Frame, app: &AppState) {
 
 fn draw_upper(f: &mut Frame, app: &AppState, area: Rect) {
     // Watch ペインのコンテンツ幅は「timestamp + 2 + filename」
-    let watch_names: Vec<String> = app.file_list.iter()
+    let watch_names: Vec<String> = app
+        .file_list
+        .iter()
         .map(|fe| format!("{}  {}", fe.modified.format("%m/%d %H:%M:%S"), fe.name))
         .collect();
 

@@ -51,8 +51,9 @@ pub fn list_backups(backup_root: &Path) -> Vec<String> {
     if let Ok(rd) = fs::read_dir(backup_root) {
         for entry in rd.flatten() {
             if entry.file_type().map(|t| t.is_dir()).unwrap_or(false) {
-                let name  = entry.file_name().to_string_lossy().to_string();
-                let mtime = entry.metadata()
+                let name = entry.file_name().to_string_lossy().to_string();
+                let mtime = entry
+                    .metadata()
                     .and_then(|m| m.modified())
                     .unwrap_or(SystemTime::UNIX_EPOCH);
                 entries.push((mtime, name));

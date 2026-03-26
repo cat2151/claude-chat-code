@@ -71,7 +71,9 @@ fn detect_single_top_dir(archive: &mut zip::ZipArchive<fs::File>) -> Option<std:
     }
 
     if !has_top_file && top_dirs.len() == 1 {
-        Some(std::path::PathBuf::from(top_dirs.into_iter().next().unwrap()))
+        Some(std::path::PathBuf::from(
+            top_dirs.into_iter().next().unwrap(),
+        ))
     } else {
         None
     }

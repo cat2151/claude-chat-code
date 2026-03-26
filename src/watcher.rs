@@ -3,11 +3,7 @@
 
 use crate::app::FileEntry;
 use chrono::Local;
-use std::{
-    fs,
-    path::Path,
-    time::SystemTime,
-};
+use std::{fs, path::Path, time::SystemTime};
 
 /// ディレクトリの mtime を取得する。取得できなければ None を返す。
 pub fn dir_mtime(path: &Path) -> Option<SystemTime> {
@@ -42,17 +38,14 @@ pub fn list_files(path: &Path) -> Vec<FileEntry> {
 /// ファイル一覧の中から最新の ZIP を探す。
 /// list_files() の結果は新しい順なので先頭の ZIP が最新となる。
 pub fn find_latest_zip(files: &[FileEntry]) -> Option<String> {
-    files
-        .iter()
-        .find(|f| f.is_zip())
-        .map(|f| f.name.clone())
+    files.iter().find(|f| f.is_zip()).map(|f| f.name.clone())
 }
 
 /// デスクトップの mtime が前回から変化したかを判定する。
 pub fn has_changed(prev: Option<SystemTime>, current: Option<SystemTime>) -> bool {
     match (prev, current) {
-        (None, Some(_))         => true,
-        (Some(p), Some(c))      => c != p,
-        _                       => false,
+        (None, Some(_)) => true,
+        (Some(p), Some(c)) => c != p,
+        _ => false,
     }
 }

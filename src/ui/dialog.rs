@@ -15,7 +15,12 @@ pub fn draw_startup_dialog(f: &mut Frame, screen: Rect, zip_name: &str) {
     let h = 7u16;
     let x = screen.x + screen.width.saturating_sub(w) / 2;
     let y = screen.y + screen.height.saturating_sub(h) / 2;
-    let area = Rect { x, y, width: w, height: h };
+    let area = Rect {
+        x,
+        y,
+        width: w,
+        height: h,
+    };
 
     f.render_widget(Clear, area);
 
@@ -33,7 +38,10 @@ pub fn draw_startup_dialog(f: &mut Frame, screen: Rect, zip_name: &str) {
     let text = vec![
         Line::from(vec![
             Span::raw("  "),
-            Span::styled(zip_name, Style::default().fg(Mk::YELLOW).add_modifier(Modifier::BOLD)),
+            Span::styled(
+                zip_name,
+                Style::default().fg(Mk::YELLOW).add_modifier(Modifier::BOLD),
+            ),
         ]),
         Line::from(""),
         Line::from(Span::styled(
@@ -41,9 +49,17 @@ pub fn draw_startup_dialog(f: &mut Frame, screen: Rect, zip_name: &str) {
             Style::default().fg(Mk::FG),
         )),
         Line::from(vec![
-            Span::styled("  [y] ", Style::default().fg(Mk::GREEN).add_modifier(Modifier::BOLD)),
+            Span::styled(
+                "  [y] ",
+                Style::default().fg(Mk::GREEN).add_modifier(Modifier::BOLD),
+            ),
             Span::styled("処理する   ", Style::default().fg(Mk::FG)),
-            Span::styled("[N] ", Style::default().fg(Mk::COMMENT).add_modifier(Modifier::BOLD)),
+            Span::styled(
+                "[N] ",
+                Style::default()
+                    .fg(Mk::COMMENT)
+                    .add_modifier(Modifier::BOLD),
+            ),
             Span::styled("スキップ", Style::default().fg(Mk::COMMENT)),
         ]),
     ];

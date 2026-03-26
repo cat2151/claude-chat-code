@@ -15,7 +15,10 @@ mod main_tests {
         assert_eq!(state.status, AppStatus::Building);
         assert!(state.cargo_run_launching);
         assert!(
-            state.log.iter().any(|line| line.contains("F5 → cargo run を起動します")),
+            state
+                .log
+                .iter()
+                .any(|line| line.contains("F5 → cargo run を起動します")),
             "F5 再実行ログが追加されていない: {:?}",
             state.log
         );
@@ -40,7 +43,10 @@ mod main_tests {
         assert!(!prepare_cargo_run_restart(&mut state));
         assert_eq!(state.status, AppStatus::Extracting);
         assert!(
-            state.log.iter().any(|line| line.contains("F5 は現在の処理中は無効です")),
+            state
+                .log
+                .iter()
+                .any(|line| line.contains("F5 は現在の処理中は無効です")),
             "F5 無効ログが追加されていない: {:?}",
             state.log
         );

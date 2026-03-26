@@ -51,18 +51,23 @@ mod updater_tests {
     fn update_bat_content_contains_expected_steps() {
         let content = update_bat_content();
         assert!(content.contains("timeout /t 3 /nobreak >nul"));
-        assert!(content.contains("cargo install --force --git https://github.com/cat2151/claude-chat-code"));
+        assert!(content
+            .contains("cargo install --force --git https://github.com/cat2151/claude-chat-code"));
         assert!(content.contains("del \"%~f0\""));
     }
 
     #[test]
     fn start_update_script_args_passes_raw_bat_path_for_cmd_start() {
-        let args = start_update_script_args(r"C:\Users\Test User\AppData\Local\Temp\update_script.bat");
-        assert_eq!(args, vec![
-            "/C".to_string(),
-            "start".to_string(),
-            "".to_string(),
-            "C:\\Users\\Test User\\AppData\\Local\\Temp\\update_script.bat".to_string(),
-        ]);
+        let args =
+            start_update_script_args(r"C:\Users\Test User\AppData\Local\Temp\update_script.bat");
+        assert_eq!(
+            args,
+            vec![
+                "/C".to_string(),
+                "start".to_string(),
+                "".to_string(),
+                "C:\\Users\\Test User\\AppData\\Local\\Temp\\update_script.bat".to_string(),
+            ]
+        );
     }
 }

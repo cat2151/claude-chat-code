@@ -25,7 +25,9 @@ impl Logger {
             .create(true)
             .truncate(true)
             .open(paths::log_file())?;
-        let logger = Self { inner: Arc::new(Mutex::new(file)) };
+        let logger = Self {
+            inner: Arc::new(Mutex::new(file)),
+        };
         logger.write_raw("=== claude-chat-code started ===")?;
         Ok(logger)
     }
@@ -47,6 +49,8 @@ impl Logger {
     #[cfg(test)]
     pub fn new_noop() -> Self {
         let file = tempfile::tempfile().expect("tempfile");
-        Self { inner: std::sync::Arc::new(std::sync::Mutex::new(file)) }
+        Self {
+            inner: std::sync::Arc::new(std::sync::Mutex::new(file)),
+        }
     }
 }

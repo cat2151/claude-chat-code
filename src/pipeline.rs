@@ -44,8 +44,12 @@ pub async fn process_zip(
         app,
         AppStatus::Watching,
         format!("work dirs 確保: {}", work.display()),
-        tokio::task::spawn_blocking({ let w = work.to_path_buf(); move || ensure_base_dirs(&w) })
-            .await.unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
+        tokio::task::spawn_blocking({
+            let w = work.to_path_buf();
+            move || ensure_base_dirs(&w)
+        })
+        .await
+        .unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
     );
 
     // ── 1. ZIP 検出通知 ────────────────────────────────────────────────────────
@@ -66,12 +70,19 @@ pub async fn process_zip(
             let w = work.to_path_buf();
             let z = zip_name.to_string();
             tokio::task::spawn_blocking(move || move_zip(&d, &w, &z))
-                .await.unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
+                .await
+                .unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
         }
     );
     {
         let mut a = app.lock().await;
-        a.push_log(format!("ZIP 移動完了: {}", archived_zip_path.file_name().unwrap_or_default().to_string_lossy()));
+        a.push_log(format!(
+            "ZIP 移動完了: {}",
+            archived_zip_path
+                .file_name()
+                .unwrap_or_default()
+                .to_string_lossy()
+        ));
         a.archives_list = list_archives(&paths::archives_dir(work));
     }
 
@@ -83,9 +94,11 @@ pub async fn process_zip(
         AppStatus::BackingUp,
         format!("project/ をバックアップ → {}", dst.display()),
         {
-            let s = src.clone(); let d = dst.clone();
+            let s = src.clone();
+            let d = dst.clone();
             tokio::task::spawn_blocking(move || backup_project(&s, &d))
-                .await.unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
+                .await
+                .unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
         }
     );
     {
@@ -102,17 +115,26 @@ pub async fn process_zip(
         AppStatus::Extracting,
         "project/src/ をクリア中...".to_string(),
         tokio::task::spawn_blocking(move || clean_src_dir(&src_to_clean))
-            .await.unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
+            .await
+            .unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
     );
     let project = paths::project_dir(work);
     step!(
         app,
         AppStatus::Extracting,
-        format!("ZIP を project/ に展開: {}", archived_zip_path.file_name().unwrap_or_default().to_string_lossy()),
+        format!(
+            "ZIP を project/ に展開: {}",
+            archived_zip_path
+                .file_name()
+                .unwrap_or_default()
+                .to_string_lossy()
+        ),
         {
-            let zp = archived_zip_path.clone(); let pr = project.clone();
+            let zp = archived_zip_path.clone();
+            let pr = project.clone();
             tokio::task::spawn_blocking(move || extract_zip(&zp, &pr))
-                .await.unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
+                .await
+                .unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
         }
     );
     app.lock().await.push_log("ZIP 展開完了".to_string());
@@ -124,9 +146,12 @@ pub async fn process_zip(
         AppStatus::Touching,
         "project/src/ を touch 中...".to_string(),
         tokio::task::spawn_blocking(move || touch_src_files(&src_dir))
-            .await.unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
+            .await
+            .unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
     );
-    app.lock().await.push_log(format!("touch 完了: {} ファイル", count));
+    app.lock()
+        .await
+        .push_log(format!("touch 完了: {} ファイル", count));
 
     // ── 6. build 直前ソース調査 ──────────────────────────────────────────────────
     {
@@ -134,8 +159,11 @@ pub async fn process_zip(
         let stats = tokio::task::spawn_blocking(move || inspect_src(&src_dir))
             .await
             .unwrap_or_else(|_| crate::fs::ops::SrcStats {
-                file_count: 0, max_lines: 0, max_lines_file: String::new(),
-                total_lines: 0, total_kb: 0.0,
+                file_count: 0,
+                max_lines: 0,
+                max_lines_file: String::new(),
+                total_lines: 0,
+                total_kb: 0.0,
             });
         let mut a = app.lock().await;
         a.push_log(format!(
@@ -153,9 +181,11 @@ pub async fn process_zip(
         AppStatus::BackingUp,
         format!("cargo run 直前バックアップ → {}", dst2.display()),
         {
-            let s = src2.clone(); let d = dst2.clone();
+            let s = src2.clone();
+            let d = dst2.clone();
             tokio::task::spawn_blocking(move || backup_project(&s, &d))
-                .await.unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
+                .await
+                .unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
         }
     );
     {
@@ -171,12 +201,15 @@ pub async fn process_zip(
         AppStatus::Building,
         "cargo run を別プロセスで起動中...".to_string(),
         tokio::task::spawn_blocking(move || spawn_cargo_run(&proj_build))
-            .await.unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
+            .await
+            .unwrap_or_else(|e| Err(anyhow::anyhow!("spawn: {}", e)))
     );
     {
         let mut a = app.lock().await;
         a.push_log(format!("cargo run 起動完了 ({} で実行中)", terminal));
-        a.set_status(AppStatus::Done("cargo run 起動済み。次の ZIP を待機中".to_string()));
+        a.set_status(AppStatus::Done(
+            "cargo run 起動済み。次の ZIP を待機中".to_string(),
+        ));
     }
 
     // ── 9. 監視状態に戻る ─────────────────────────────────────────────────────

@@ -17,8 +17,8 @@ pub fn move_zip(desktop: &Path, base: &Path, zip_name: &str) -> Result<std::path
 fn archives_dest(base: &Path, zip_name: &str) -> std::path::PathBuf {
     let path = std::path::Path::new(zip_name);
     let stem = path.file_stem().unwrap_or_default().to_string_lossy();
-    let ext  = path.extension().unwrap_or_default().to_string_lossy();
-    let ts   = chrono::Local::now().format("%Y%m%d_%H%M%S").to_string();
+    let ext = path.extension().unwrap_or_default().to_string_lossy();
+    let ts = chrono::Local::now().format("%Y%m%d_%H%M%S").to_string();
     let new_name = if ext.is_empty() {
         format!("{}_{}", stem, ts)
     } else {
@@ -37,8 +37,9 @@ pub fn list_archives(archives_dir: &Path) -> Vec<String> {
     if let Ok(rd) = fs::read_dir(archives_dir) {
         for entry in rd.flatten() {
             if entry.file_type().map(|t| t.is_file()).unwrap_or(false) {
-                let name  = entry.file_name().to_string_lossy().to_string();
-                let mtime = entry.metadata()
+                let name = entry.file_name().to_string_lossy().to_string();
+                let mtime = entry
+                    .metadata()
                     .and_then(|m| m.modified())
                     .unwrap_or(SystemTime::UNIX_EPOCH);
                 entries.push((mtime, name));

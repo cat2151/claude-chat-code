@@ -36,28 +36,38 @@ pub fn touch_src_files(src_dir: &Path) -> Result<usize> {
 
 #[derive(Debug, Clone)]
 pub struct SrcStats {
-    pub file_count:     usize,
-    pub max_lines:      usize,
+    pub file_count: usize,
+    pub max_lines: usize,
     pub max_lines_file: String,
-    pub total_lines:    usize,
-    pub total_kb:       f64,
+    pub total_lines: usize,
+    pub total_kb: f64,
 }
 
 pub fn inspect_src(src_dir: &Path) -> SrcStats {
-    let mut file_count  = 0usize;
-    let mut max_lines   = 0usize;
+    let mut file_count = 0usize;
+    let mut max_lines = 0usize;
     let mut max_lines_file = String::new();
     let mut total_lines = 0usize;
     let mut total_bytes = 0u64;
 
     if !src_dir.exists() {
-        return SrcStats { file_count, max_lines, max_lines_file, total_lines, total_kb: 0.0 };
+        return SrcStats {
+            file_count,
+            max_lines,
+            max_lines_file,
+            total_lines,
+            total_kb: 0.0,
+        };
     }
 
     for entry in WalkDir::new(src_dir).into_iter().flatten() {
-        if !entry.file_type().is_file() { continue; }
+        if !entry.file_type().is_file() {
+            continue;
+        }
         let path = entry.path();
-        if path.extension().and_then(|e| e.to_str()) != Some("rs") { continue; }
+        if path.extension().and_then(|e| e.to_str()) != Some("rs") {
+            continue;
+        }
 
         file_count += 1;
 

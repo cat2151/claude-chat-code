@@ -8,7 +8,7 @@ mod fs_archive_tests {
     fn move_zip_always_adds_timestamp_suffix() {
         let tmp = tempdir().unwrap();
         let desktop = tmp.path().join("desktop");
-        let base    = tmp.path().join("base");
+        let base = tmp.path().join("base");
         fs::create_dir_all(&desktop).unwrap();
         fs::create_dir_all(base.join("archives")).unwrap();
         fs::write(desktop.join("foo.zip"), b"zip").unwrap();
@@ -17,7 +17,11 @@ mod fs_archive_tests {
 
         // 常にタイムスタンプ付き → foo.zip という名前にはならない
         let name = result.file_name().unwrap().to_string_lossy().to_string();
-        assert!(name.starts_with("foo_"), "タイムスタンププレフィックスがあるべきだ: {}", name);
+        assert!(
+            name.starts_with("foo_"),
+            "タイムスタンププレフィックスがあるべきだ: {}",
+            name
+        );
         assert!(name.ends_with(".zip"));
         assert!(!desktop.join("foo.zip").exists());
     }
@@ -26,7 +30,7 @@ mod fs_archive_tests {
     fn move_zip_second_call_does_not_overwrite_first() {
         let tmp = tempdir().unwrap();
         let desktop = tmp.path().join("desktop");
-        let base    = tmp.path().join("base");
+        let base = tmp.path().join("base");
         fs::create_dir_all(&desktop).unwrap();
         fs::create_dir_all(base.join("archives")).unwrap();
 
@@ -39,7 +43,10 @@ mod fs_archive_tests {
         fs::write(desktop.join("foo.zip"), b"second").unwrap();
         move_zip(&desktop, &base, "foo.zip").unwrap();
 
-        let entries: Vec<_> = fs::read_dir(base.join("archives")).unwrap().flatten().collect();
+        let entries: Vec<_> = fs::read_dir(base.join("archives"))
+            .unwrap()
+            .flatten()
+            .collect();
         assert_eq!(entries.len(), 2, "archives に2ファイルあるべきだ");
     }
 }

@@ -7,12 +7,11 @@ use std::path::{Path, PathBuf};
 
 /// `%LOCALAPPDATA%\claude-chat-code\` を返す
 pub fn app_dir() -> PathBuf {
-    let local = std::env::var("LOCALAPPDATA")
-        .unwrap_or_else(|_| {
-            // fallback: %USERPROFILE%\AppData\Local
-            let home = std::env::var("USERPROFILE").unwrap_or_else(|_| ".".to_string());
-            format!(r"{}\AppData\Local", home)
-        });
+    let local = std::env::var("LOCALAPPDATA").unwrap_or_else(|_| {
+        // fallback: %USERPROFILE%\AppData\Local
+        let home = std::env::var("USERPROFILE").unwrap_or_else(|_| ".".to_string());
+        format!(r"{}\AppData\Local", home)
+    });
     PathBuf::from(local).join("claude-chat-code")
 }
 
@@ -89,7 +88,9 @@ pub fn watch_dir_label(watch_dir: &std::path::Path) -> String {
 
     let candidates = [
         std::path::PathBuf::from(&home).join("Desktop"),
-        std::path::PathBuf::from(&home).join("OneDrive").join("Desktop"),
+        std::path::PathBuf::from(&home)
+            .join("OneDrive")
+            .join("Desktop"),
     ];
 
     for candidate in &candidates {

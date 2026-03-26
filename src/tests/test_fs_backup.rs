@@ -21,7 +21,10 @@ mod fs_backup_tests {
 
         assert!(dst.join("Cargo.toml").exists());
         assert!(dst.join("src").join("main.rs").exists());
-        assert!(!dst.join("target").exists(), "target/ はコピーされるべきではない");
+        assert!(
+            !dst.join("target").exists(),
+            "target/ はコピーされるべきではない"
+        );
     }
 
     #[test]

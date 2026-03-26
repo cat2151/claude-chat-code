@@ -22,15 +22,18 @@ pub enum AppStatus {
 impl AppStatus {
     pub fn label(&self) -> String {
         match self {
-            AppStatus::Watching         => "👁  監視中 : Claude chat からダウンロードした ZIP を監視して自動ビルドします".to_string(),
-            AppStatus::ZipDetected(n)   => format!("📦 ZIP検出: {}", n),
-            AppStatus::Moving           => "🚚 移動中".to_string(),
-            AppStatus::BackingUp        => "💾 バックアップ中".to_string(),
-            AppStatus::Extracting       => "📂 展開中".to_string(),
-            AppStatus::Touching         => "✏️  touch中".to_string(),
-            AppStatus::Building         => "🔨 ビルド起動".to_string(),
-            AppStatus::Error(e)         => format!("❌ ERROR: {}", e),
-            AppStatus::Done(msg)        => format!("✅ {}", msg),
+            AppStatus::Watching => {
+                "👁  監視中 : Claude chat からダウンロードした ZIP を監視して自動ビルドします"
+                    .to_string()
+            }
+            AppStatus::ZipDetected(n) => format!("📦 ZIP検出: {}", n),
+            AppStatus::Moving => "🚚 移動中".to_string(),
+            AppStatus::BackingUp => "💾 バックアップ中".to_string(),
+            AppStatus::Extracting => "📂 展開中".to_string(),
+            AppStatus::Touching => "✏️  touch中".to_string(),
+            AppStatus::Building => "🔨 ビルド起動".to_string(),
+            AppStatus::Error(e) => format!("❌ ERROR: {}", e),
+            AppStatus::Done(msg) => format!("✅ {}", msg),
         }
     }
 }

@@ -8,7 +8,7 @@ use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
 pub fn age_label(name: &str) -> String {
     match parse_ts_from_name(name) {
         Some(dt) => elapsed_label(dt),
-        None      => String::new(),
+        None => String::new(),
     }
 }
 
@@ -25,10 +25,14 @@ fn parse_ts_from_name(name: &str) -> Option<DateTime<Local>> {
 
     // 末尾 15 文字が _YYYYMMDD_HHMMSS（アンダースコア込み）= 16 文字
     // 例: backup_20250318_153042 → 末尾の "20250318_153042" を取る
-    if stem.len() < 16 { return None; }
+    if stem.len() < 16 {
+        return None;
+    }
     let tail = &stem[stem.len() - 15..]; // "YYYYMMDD_HHMMSS"
-    let sep  = &stem[stem.len() - 16..stem.len() - 15]; // "_"
-    if sep != "_" { return None; }
+    let sep = &stem[stem.len() - 16..stem.len() - 15]; // "_"
+    if sep != "_" {
+        return None;
+    }
 
     let naive = NaiveDateTime::parse_from_str(tail, "%Y%m%d_%H%M%S").ok()?;
     Local.from_local_datetime(&naive).single()
@@ -37,9 +41,9 @@ fn parse_ts_from_name(name: &str) -> Option<DateTime<Local>> {
 // ─── 経過時間ラベル ───────────────────────────────────────────────────────────
 
 fn elapsed_label(dt: DateTime<Local>) -> String {
-    let now     = Local::now();
+    let now = Local::now();
     let elapsed = now.signed_duration_since(dt);
-    let secs    = elapsed.num_seconds();
+    let secs = elapsed.num_seconds();
 
     if secs < 0 {
         return "now".to_string(); // 時刻ずれ対策

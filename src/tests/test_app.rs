@@ -8,7 +8,11 @@ mod app_tests {
         for i in 0..250 {
             state.push_log(format!("line {}", i));
         }
-        assert!(state.log.len() <= 200, "ログは最大200行であるべきだが {} 行あった", state.log.len());
+        assert!(
+            state.log.len() <= 200,
+            "ログは最大200行であるべきだが {} 行あった",
+            state.log.len()
+        );
     }
 
     #[test]
@@ -17,8 +21,16 @@ mod app_tests {
         state.log.clear();
         state.push_log("hello");
         let last = state.log.last().unwrap();
-        assert!(last.starts_with('['), "ログ行はタイムスタンプで始まるべきだが: {:?}", last);
-        assert!(last.contains("hello"), "メッセージが含まれていない: {:?}", last);
+        assert!(
+            last.starts_with('['),
+            "ログ行はタイムスタンプで始まるべきだが: {:?}",
+            last
+        );
+        assert!(
+            last.contains("hello"),
+            "メッセージが含まれていない: {:?}",
+            last
+        );
     }
 
     #[test]

@@ -30,7 +30,7 @@ impl Config {
     pub fn resolve_watch_dir(&self) -> PathBuf {
         match &self.watch_dir {
             Some(p) => PathBuf::from(p),
-            None    => paths::resolve_desktop(),
+            None => paths::resolve_desktop(),
         }
     }
 
@@ -38,7 +38,7 @@ impl Config {
     pub fn resolve_watch_interval(&self) -> Duration {
         match &self.watch_interval {
             Some(s) => parse_duration(s).unwrap_or(Duration::from_millis(500)),
-            None    => Duration::from_millis(500),
+            None => Duration::from_millis(500),
         }
     }
 }

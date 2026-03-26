@@ -24,8 +24,11 @@ mod config_tests {
 
     #[test]
     fn parse_with_whitespace() {
-        assert_eq!(parse_duration("  500ms  "), Some(Duration::from_millis(500)));
-        assert_eq!(parse_duration(" 1s "),      Some(Duration::from_millis(1000)));
+        assert_eq!(
+            parse_duration("  500ms  "),
+            Some(Duration::from_millis(500))
+        );
+        assert_eq!(parse_duration(" 1s "), Some(Duration::from_millis(1000)));
     }
 
     #[test]
