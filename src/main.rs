@@ -47,15 +47,11 @@ const HELP_TEXT: &str = concat!(
     "    -h, --help    Print help\n",
 );
 
-fn help_text() -> &'static str {
-    HELP_TEXT
-}
-
 #[tokio::main]
 async fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
     if is_help_flag(&args) {
-        print!("{}", help_text());
+        print!("{}", HELP_TEXT);
         return Ok(());
     }
     if is_update_subcommand(&args) {

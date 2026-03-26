@@ -2,7 +2,7 @@
 mod main_tests {
     use crate::{
         app::{AppState, AppStatus},
-        can_restart_cargo_run, help_text, is_help_flag, is_update_subcommand,
+        can_restart_cargo_run, is_help_flag, is_update_subcommand, HELP_TEXT,
         prepare_cargo_run_restart,
     };
 
@@ -71,7 +71,7 @@ mod main_tests {
 
     #[test]
     fn help_text_contains_usage_and_update_command() {
-        let help = help_text();
+        let help = HELP_TEXT;
 
         assert!(help.contains("claude-chat-code"));
         assert!(help.contains("USAGE:"));
