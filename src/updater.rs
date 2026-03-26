@@ -25,7 +25,7 @@ pub(crate) fn start_update_script_args(bat_path: &str) -> Vec<String> {
         "/C".to_string(),
         "start".to_string(),
         "".to_string(),
-        format!("\"{bat_path}\""),
+        bat_path.to_string(),
     ]
 }
 
