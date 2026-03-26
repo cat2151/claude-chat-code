@@ -1,6 +1,6 @@
-/// ファイルログに責任を持つ。
-/// 起動時に log.txt を新規作成し、以降は追記する。
-/// TUI が panic しても log.txt は残る。
+//! ファイルログに責任を持つ。
+//! 起動時に log.txt を新規作成し、以降は追記する。
+//! TUI が panic しても log.txt は残る。
 
 use crate::paths;
 use anyhow::Result;

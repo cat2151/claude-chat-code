@@ -1,7 +1,6 @@
-/// Cargo ビルドスクリプト。
-/// ビルド時の git commit hash を環境変数としてアプリに埋め込む。
-/// git が使えない・repository がない場合は "unknown" を埋め込む（ビルドは通る）。
-
+//! Cargo ビルドスクリプト。
+//! ビルド時の git commit hash を環境変数としてアプリに埋め込む。
+//! git が使えない・repository がない場合は "unknown" を埋め込む（ビルドは通る）。
 fn main() {
     let hash = git_commit_hash().unwrap_or_else(|| "unknown".to_string());
     // アプリ側で env!("BUILD_COMMIT_HASH") で参照できる

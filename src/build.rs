@@ -1,7 +1,7 @@
-/// cargo run の起動に責任を持つ。
-/// TUI とは独立した別プロセスで非同期実行する。
-/// wt → pwsh → cmd の順でフォールバックして新ウィンドウを開く。
-/// wt / pwsh はフォント設定が引き継がれるため cmd より表示品質が高い。
+//! cargo run の起動に責任を持つ。
+//! TUI とは独立した別プロセスで非同期実行する。
+//! wt → pwsh → cmd の順でフォールバックして新ウィンドウを開く。
+//! wt / pwsh はフォント設定が引き継がれるため cmd より表示品質が高い。
 
 use anyhow::Result;
 use std::{path::Path, process::Stdio};

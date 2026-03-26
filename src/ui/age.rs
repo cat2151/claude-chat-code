@@ -1,5 +1,5 @@
-/// ファイル名のタイムスタンプサフィックスから経過時間ラベルを生成する。
-/// backup_YYYYMMDD_HHMMSS や foo_YYYYMMDD_HHMMSS.zip 形式を対象とする。
+//! ファイル名のタイムスタンプサフィックスから経過時間ラベルを生成する。
+//! backup_YYYYMMDD_HHMMSS や foo_YYYYMMDD_HHMMSS.zip 形式を対象とする。
 
 use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
 

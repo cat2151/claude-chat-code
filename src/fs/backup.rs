@@ -1,4 +1,4 @@
-/// project/ のバックアップ操作とバックアップ一覧取得に責任を持つ。
+//! project/ のバックアップ操作とバックアップ一覧取得に責任を持つ。
 
 use anyhow::Result;
 use std::{fs, path::Path, time::SystemTime};

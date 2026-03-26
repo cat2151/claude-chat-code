@@ -1,4 +1,4 @@
-/// ZIP の archives/ への移動とアーカイブ一覧取得に責任を持つ。
+//! ZIP の archives/ への移動とアーカイブ一覧取得に責任を持つ。
 
 use anyhow::Result;
 use std::{fs, path::Path, time::SystemTime};

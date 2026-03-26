@@ -1,4 +1,4 @@
-/// アプリケーション状態の定義。
+//! アプリケーション状態の定義。
 
 use crate::{fs::ops::SrcStats, logger::Logger};
 use chrono::{DateTime, Local};

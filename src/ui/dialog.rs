@@ -1,5 +1,5 @@
-/// 起動時 ZIP 確認ダイアログの描画に責任を持つ。
-/// overlay として最前面に描画する。
+//! 起動時 ZIP 確認ダイアログの描画に責任を持つ。
+//! overlay として最前面に描画する。
 
 use super::theme::{padded, Mk};
 use ratatui::{
